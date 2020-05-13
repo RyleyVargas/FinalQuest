@@ -12,6 +12,7 @@ bg_img = img_folder / "bg.png"
 print(bg_img)
 
 game_dir = path.join(path.dirname(__file__))
+print(game_dir)
 
 # global variables
 WIDTH = 480
