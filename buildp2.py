@@ -1,7 +1,10 @@
-# KidsCanCode - Game Development with Pygame video series
-# Shmup game - part 1
-# Video link: https://www.youtube.com/watch?v=nGufy7weyGY
-# Player sprite and movement
+# This File was created  by Ryley Vargas
+# Sources (how to import photos into py.game): https://pythonprogramming.net/displaying-images-pygame/
+
+'''
+
+'''
+
 import pygame as pg
 from pygame.sprite import Sprite
 import random
@@ -192,8 +195,8 @@ class Spit(Sprite):
     def __init__(self, x, y):
         Sprite.__init__(self)
         self.image = spit_img
-        # self.image = pg.Surface((5,10))
-        # self.image.fill(BLACK)
+        self.image = pg.Surface((5,10))
+        self.image.fill(BLACK)
         self.rect = self.image.get_rect()
         self.rect.bottom = y
         self.rect.centerx = x
@@ -202,7 +205,7 @@ class Spit(Sprite):
         self.rect.y += self.speedy
         if self.rect.y < 0:
             self.kill()
-            # print(len(lazers))
+            print(len(lazers))
 
 all_sprites = pg.sprite.Group()
 mobs = pg.sprite.Group()
@@ -257,27 +260,27 @@ while running:
             all_sprites.add(m)
             mobs.add(m)
 
-    # for m in mobs:
-    #     lhits = pg.sprite.spritecollide(m, lazers, False)
-    #     if lhits:
-    #         m.hitpoints-=1
-    #         # print(m.hitpoints)
-    #         if random.random() > 0.9:
-    #             pow = Pow(hit.rect.center)
-    #             all_sprites.add(pow)
-    #             powerups.add(pow)
+    for m in mobs:
+        lhits = pg.sprite.spritecollide(m, lazers, False)
+        if lhits:
+            m.hitpoints-=1
+            print(m.hitpoints)
+            if random.random() > 0.9:
+                pow = Pow(hit.rect.center)
+                all_sprites.add(pow)
+                powerups.add(pow)
 
     # check to see if player hit a powerup
     hits = pg.sprite.spritecollide(player, powerups, True)
     for hit in hits:
         if hit.type == 'shield':
             player.shield += random.randrange(10, 30)
-            # shield_sound.play()
+            shield_sound.play()
             if player.shield >= 100:
                 player.shield = 100
         if hit.type == 'gun':
             player.powerup()
-            # power_sound.play()
+            power_sound.play()
 
     background_rect2.y = background_rect.y - 600
     background_rect.y+= player.speedy
