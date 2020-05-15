@@ -37,16 +37,33 @@ clock = pg.time.Clock()
 # Load all game graphics
 background = pg.image.load(path.join(game_dir + "/img/bg.png")).convert()
 background_rect = background.get_rect()
-# player_img = pg.image.load(path.join(img_dir, "playerShip1_orange.png")).convert()
-# meteor_img = pg.image.load(path.join(img_dir, "meteorBrown_med1.png")).convert()
-# bullet_img = pg.image.load(path.join(img_dir, "laserRed16.png")).convert()
+player_img = pg.image.load(path.join(img_dir, "playerShip1_orange.png")).convert()
+mob_img = pg.image.load(path.join(game_dir + "/img/mob.png")).convert()
+lazer_img = pg.image.load(path.join(game_dir + "/img/lazer.png")).convert()
+#meteor_img = pg.image.load(path.join(img_dir, "meteorBrown_med1.png")).convert()
+#bullet_img = pg.image.load(path.join(img_dir, "laserRed16.png")).convert()
+
+font_name = pg.font.match_font('arial')
+def draw_text(surf, text, size, x, y):
+    font = pg.font.Font(font_name, size)
+    text_surface = font.render(text, True, WHITE)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    surf.blit(text_surface, text_rect)
+
+def draw__health(surf, x, y, w):
+    outline_rect = pg.Rect(x, y, 100, 20)
+    fill_rect = pg.Rect(x, y, w, 20)
+    pg.draw.rect(surf, RED, fill_rect)
+    pg.draw.rect(surf, WHITE, outline_rect, 2)
 
 class Player(Sprite):
     def __init__(self):
         Sprite.__init__(self)
-        self.image = pg.Surface((50,40))
-        # self.image = pg.transform.scale(player_img, (50, 40))
-        self.image.fill(GREEN)
+        #self.image = pg.Surface((50,40))
+        self.image = pg.transform.scale(player_img, (50, 40))
+        #self.image = player_img
+        #self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT -10
@@ -60,8 +77,8 @@ class Player(Sprite):
             self.speedx = -8
         if keystate[pg.K_d]:
             self.speedx = 8
-        if keystate[pg.K_SPACE]:
-            self.pew()
+        #if keystate[pg.K_SPACE]:
+        #    self.pew()
         # if keystate[pg.K_w]:
         #     self.speedy = -8
         # if keystate[pg.K_s]:
@@ -78,24 +95,32 @@ class Mob(Sprite):
     def __init__(self):
         Sprite.__init__(self)
         self.image = pg.Surface((30,30))
+        self.image = mob_img
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(0, WIDTH - self.rect.width)
         self.rect.y = random.randrange(0, 250)
         self.speedy = random.randrange(1, 10)
         self.speedx = random.randrange(1, 8)
+        self.hitpoints = 10
     def update(self):
+        self.health_image = pg.Surface(self.hitpoints, 10)
+        self.health_rect.x = self.x
+        self.health_rect.y = self.y
         self.rect.x += self.speedx
         # self.rect.y += self.speedy
         if self.rect.x > WIDTH or self.rect.x < 0:
             self.speedx*=-1
             self.rect.y += random.randrange(5,25)
         if self.rect.top > HEIGHT + 10:
-            self.rect.y = 0        
+            self.rect.y = 0  
+        if self.hitpoints <= 0:
+            self.kill()
 
 class Lazer(Sprite):
     def __init__(self, x, y):
         Sprite.__init__(self)
+        self.image = lazer_img
         self.image = pg.Surface((5,10))
         self.image.fill(BLACK)
         self.rect = self.image.get_rect()
@@ -128,7 +153,10 @@ while running:
         # check for window close
         if event.type == pg.QUIT:
             running = False
-
+        elif event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE:
+                player.pew()
+                
     # Update the sprites in the game
     all_sprites.update()
 
